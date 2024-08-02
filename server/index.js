@@ -13,6 +13,9 @@ dotenv.config();
 
 app.use(cors())
 app.use(bodyParser.json());
+app.get('/', (req, res) => {
+  res.send('Welcome to the SellMore API!');
+});
 app.use('/users', userRoutes);
 app.use('/popups', popupRoutes);
 app.use('/sites', siteRoutes);
