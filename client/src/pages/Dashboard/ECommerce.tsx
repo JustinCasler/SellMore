@@ -3,17 +3,23 @@ import { Link } from 'react-router-dom';
 import CardDataStats from '../../components/SiteCard';
 import DefaultLayout from '../../layout/DefaultLayout';
 import CreateSiteCard from '../../components/CreateSiteCard';
-import { fetchSites } from '../../api/index';
-import { Site } from '../../api/index';
+import { fetchSites, postUser, Site } from '../../api/index';
 
 const ECommerce: React.FC = () => {
   const [sites, setSites] = useState<Site[]>([]);
-  const userId = '669af0ea9de184888dc2d2fd';
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [redirect, setRedirect] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const getSites = async () => {
       try {
-        const response = await fetchSites(userId);
+        const response = await fetchSites();
         const sitesData: Site[] = response.data.map((site: any) => ({
           name: site.name,
           url: site.url,
@@ -27,7 +33,51 @@ const ECommerce: React.FC = () => {
     };
 
     getSites();
-  }, [userId]);
+  }, []);
+
+  const showError = (message: string) => {
+    setError(message);
+    setTimeout(() => setError(''), 3000);
+  };
+
+  const handleSignup = async () => {
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      showError("Please fill in all fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showError("Please make sure passwords match.");
+      return;
+    }
+
+    try {
+      const newUser = {
+        name: `${firstName} ${lastName}`,
+        email,
+        password
+      };
+      const result = await postUser(newUser);
+      if (result.data.token) {
+        localStorage.setItem("profile", JSON.stringify({ ...result.data }));
+        localStorage.setItem("isLoggedIn", "true");
+        setRedirect(true);
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data.message === "Email is already taken"
+      ) {
+        showError("Email is already taken");
+      } else {
+        showError("Something went wrong. Please try again.");
+      }
+    }
+  };
+
+  if (redirect) {
+    // Redirect logic here (e.g., using react-router)
+  }
 
   return (
     <DefaultLayout>
@@ -59,6 +109,43 @@ const ECommerce: React.FC = () => {
         </div>
         <div className="fixed top-21 right-1 h-full w-1/4 p-6">
           <CreateSiteCard/>
+        </div>
+        <div className="signup-form">
+          <h2>Signup</h2>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          <form onSubmit={(e) => { e.preventDefault(); handleSignup(); }}>
+            <input
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <button type="submit">Signup</button>
+          </form>
         </div>
       </div>
     </DefaultLayout>

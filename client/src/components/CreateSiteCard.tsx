@@ -8,18 +8,14 @@ const CardCreateSite: React.FC = () => {
   const [url, setUrl] = useState('');
 
   const handleCreateSite = async () => {
-    const userId = '669af0ea9de184888dc2d2fd';
     const newSite = {
       name,
       url,
-      user: userId,
     };
 
     try {
       const siteResponse = await createSite(newSite);
-      console.log(siteResponse)
       const siteId = siteResponse.data._id;
-      console.log('siteId, ', siteId)
 
       if (!siteId) {
         throw new Error('Failed to retrieve site ID.');
@@ -29,14 +25,11 @@ const CardCreateSite: React.FC = () => {
         message: "",
         color: "",
         corner: "",
-        user: userId,
         website: siteId,
         published: false
       };
 
-      const popupResponse = await createPopup(newPopup);
-      console.log('Site created successfully:', siteResponse.data);
-      console.log('Popup created successfully:', popupResponse.data);
+      await createPopup(newPopup);
       navigate(`/create-popup/${siteId}`); // Navigate to the new site's page or another appropriate route
     } catch (error) {
       console.error('Error creating site or popup:', error);

@@ -21,7 +21,6 @@ const SiteCard: React.FC<SiteCard> = ({
           </h4>
           <span className="text-sm font-medium">{stat}</span>
         </div>
-
         <span
           className={`flex items-center gap-1 text-sm font-medium text-meta-3`}
         >

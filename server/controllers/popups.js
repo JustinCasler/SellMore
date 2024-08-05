@@ -12,11 +12,14 @@ export const getPopups = async (req, res) => {
 };
 
 export const createPopups = async (req, res) => {
-    const popup = req.body;
-    const newPopup = new popupModel(popup);
+    const { website, published } = req.body;
 
     try {
-        await newPopup.save();
+        const newPopup = await popupModel.create({
+            website,
+            published,
+            user: req.userId
+        });
         res.status(201).json(newPopup);
     } catch (error) {
         res.status(409).json({ message: error.message });
@@ -30,8 +33,6 @@ export const updatePopup = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).send(`No popup with id: ${id}`);
     }
-
-    // Convert user and website to ObjectId if they are not already
 
 
     const updatedPopup = { message, color, corner, user, website, published: true, _id: id };

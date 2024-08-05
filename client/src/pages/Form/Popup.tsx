@@ -21,8 +21,7 @@ const PopupForm: React.FC = () => {
         const response = await fetchPopups(websiteId!);
         if (response.data.length > 0) {
           const popup = response.data[0];
-          console.log(popup._id);
-          setPopupId(popup._id); // Use id if available
+          setPopupId(popup._id); 
           setPopupMessage(popup.message || '');
           setPopupColor(popup.color || '#ffffff');
           setPopupCorner(popup.corner || 'top-right');
@@ -58,9 +57,8 @@ const PopupForm: React.FC = () => {
       message: popupMessage,
       color: popupColor,
       corner: popupCorner,
-      user: "669af0ea9de184888dc2d2fd", // Replace with actual user ID or info
       website: websiteId!,
-      published: false, // Replace with actual status if needed
+      published: false,
     };
 
     try {

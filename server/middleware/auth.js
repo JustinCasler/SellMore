@@ -8,7 +8,6 @@ const auth = async (req, res, next) => {
 
     if (authorizationHeader) {
       const token = authorizationHeader.split(" ")[1];
-
       let decodedData;
 
       if (token) {

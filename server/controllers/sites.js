@@ -1,9 +1,8 @@
 import SiteModel from '../models/siteModel.js';
 
 export const getSites = async (req, res) => {
-    const { userId } = req.params;
     try {
-        const sites = await SiteModel.find({ user: userId });
+        const sites = await SiteModel.find({ user: req.userId });
         res.status(200).json(sites);
     } catch (error) {
         res.status(404).json({ message: error.message });
@@ -11,11 +10,14 @@ export const getSites = async (req, res) => {
 };
 
 export const createSite = async (req, res) => {
-    const site = req.body;
-    const newSite = new SiteModel(site);
+    const {name, url} = req.body;
 
-    console.log(req)
     try {
+        const newSite = await SiteModel.create({
+            name,
+            url,
+            user: req.userId
+        })
         await newSite.save();
         res.status(201).json(newSite);
     } catch (error) {

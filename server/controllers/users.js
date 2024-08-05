@@ -1,4 +1,8 @@
 import UserModel from '../models/UserModel.js';
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+
+const secret = "test";
 
 export const getUsers = async (req, res) => {
     try {
@@ -10,13 +14,26 @@ export const getUsers = async (req, res) => {
 };
 
 export const createUser = async (req, res) => {
-    const user = req.body;
-    const newUser = new UserModel(user);
-
+    const { email, password, name } = req.body; 
     try {
-        await newUser.save();
-        res.status(201).json(newUser);
+      const oldUser = await UserModel.findOne({ email });
+  
+      if (oldUser) {
+        return res.status(400).json({ message: "Email is already taken" });
+      }
+      const hashedPassword = await bcrypt.hash(password, 12);
+      const result = await UserModel.create({
+        email,
+        password: hashedPassword,
+        name, // Use `name` directly
+      });
+      const token = jwt.sign({ email: result.email, id: result._id }, secret, {
+        expiresIn: "365d",
+      });
+      res.status(201).json({ result, token });
     } catch (error) {
-        res.status(409).json({ message: error.message });
+      res.status(500).json({ message: "Something went wrong" });
+      console.error(error);
     }
-};
+  };
+  

@@ -1,8 +1,6 @@
 (async function(global, configKey) {
-    console.log("Script initialized with configKey:", configKey);
 
     global[configKey] = global[configKey] || function(config) {
-        console.log("customConfig called with:", config);
         (global[configKey].q = global[configKey].q || []).push(config);
         processQueue();
     };
@@ -10,14 +8,12 @@
     // Fetch popup data from the database
     async function fetchPopups(websiteId) {
         try {
-            const response = await fetch(`http://localhost:5001/popups/get-popups/${websiteId}`);
-            console.log('Response status:', response.status);
+            const response = await fetch(`https://sellmore.onrender.com/popups/get-popups/${websiteId}`);
 
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const result = await response.json();
-            console.log(result);
             return result;
         } catch (error) {
             console.error("Error fetching popup data:", error);
@@ -27,7 +23,6 @@
 
     // Function to track visitors
     function trackVisitor(config) {
-        console.log("Tracking visitor with config:", config);
         var xhr = new XMLHttpRequest();
         xhr.open('POST', 'https://eo5yzla6isyvxnm.m.pipedream.net', true);
         xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
@@ -41,7 +36,6 @@
 
     // Function to manipulate the DOM
     function manipulateDOM(config) {
-        console.log("Manipulating DOM with config:", config);
         var shadowHost = document.createElement('div');
         shadowHost.id = 'custom-popup-host';
         shadowHost.style.position = 'fixed';
@@ -129,7 +123,6 @@
 
     // Process the queue of configurations
     async function processQueue() {
-        console.log("Processing config queue");
         var queue = global[configKey].q || [];
         for (var i = 0; i < queue.length; i++) {
             var config = queue[i];
